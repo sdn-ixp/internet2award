@@ -4,7 +4,7 @@
 #  <website link>
 #
 #  File:
-#        sdx_mininet_traffic_offloading.py
+#        sdx_mininet_inbound_traffic_engineering.py
 #
 #  Project:
 #        Software Defined Exchange (SDX)
@@ -65,7 +65,7 @@ def getArgs():
 def simple(cli, controllerIP):
     "Create and test SDX Simple Module"
     print "Creating the topology with one IXP switch and three participating ASs\n\n" 
-    topo = SingleSwitchTopo(k=3)
+    topo = SingleSwitchTopo(k=4)
     net = Mininet(topo, controller=lambda name: RemoteController( 'c0', controllerIP ), autoSetMacs=True) #, autoStaticArp=True)
     net.start()
     hosts=net.hosts
@@ -75,21 +75,34 @@ def simple(cli, controllerIP):
             host.cmd('ifconfig lo:40 110.0.0.1 netmask 255.255.255.0 up')
             host.cmd('route add -net 120.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h1-eth0')
             host.cmd('route add -net 130.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h1-eth0')
+            host.cmd('route add -net 140.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h1-eth0')
         if host.name=='h2':
             host.cmd('route add -net 110.0.0.0 netmask 255.255.255.0 gw 10.0.0.1 h2-eth0')
             host.cmd('ifconfig lo:40 120.0.0.1 netmask 255.255.255.0 up')
             host.cmd('route add -net 130.0.0.0 netmask 255.255.255.0 gw 10.0.0.3 h2-eth0')
+            host.cmd('route add -net 140.0.0.0 netmask 255.255.255.0 gw 10.0.0.4 h2-eth0')
         if host.name=='h3':
             host.cmd('route add -net 110.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h3-eth0')
             host.cmd('route add -net 120.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h3-eth0')
             host.cmd('ifconfig lo:40 130.0.0.1 netmask 255.255.255.0 up')
+            host.cmd('ifconfig lo:41 140.0.0.1 netmask 255.255.255.0 up')
+        if host.name=='h4':
+            host.cmd('route add -net 110.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h4-eth0')
+            host.cmd('route add -net 120.0.0.0 netmask 255.255.255.0 gw 10.0.0.2 h4-eth0')
+            host.cmd('ifconfig lo:40 130.0.0.1 netmask 255.255.255.0 up')
+            host.cmd('ifconfig lo:41 140.0.0.1 netmask 255.255.255.0 up')
+            
     if (cli): # Running CLI
         CLI(net)
     else:
         print "Running the Ping Tests\n\n"
         for host in hosts:
-            if host.name=='h1':
-                host.cmdPrint('ping -c 5 -I 110.0.0.1 130.0.0.1')
+            if host.name=='h3':
+                host.cmdPrint('ping -c 5 -I 130.0.0.1 110.0.0.1')
+                host.cmdPrint('ping -c 5 -I 140.0.0.1 110.0.0.1')
+            if host.name=='h4':
+                host.cmdPrint('ping -c 5 -I 130.0.0.1 110.0.0.1')
+                host.cmdPrint('ping -c 5 -I 140.0.0.1 110.0.0.1')
 
     net.stop()
     print "\n\nExperiment Complete !\n\n"

@@ -3,7 +3,7 @@
 #  <website link>
 #
 #  File:
-#        main.py
+#        core.py
 #
 #  Project:
 #        Software Defined Exchange (SDX)
@@ -17,7 +17,7 @@
 #        Copyright (C) 2012, 2013 Georgia Institute of Technology
 #              Network Operations and Internet Security Lab
 #
-#  License:
+#  Licence:
 #        This file is part of the SDX development base package.
 #
 #        This file is free code: you can redistribute it and/or modify it under
@@ -38,11 +38,8 @@
 from pyretic.lib.corelib import *
 from pyretic.lib.std import *
 
-from pyretic.modules.arp import *
-from pyretic.modules.mac_learner import *
-
 ## SDX-specific imports
-from pyretic.sdx.lib.core import *
+from pyretic.sdx.lib.common import *
 
 ## General imports
 import json
@@ -50,30 +47,22 @@ import os
 
 cwd = os.getcwd()
 
-## Globals
-BGP_PORT = 179
-BGP = match(srcport=BGP_PORT) | match(dstport=BGP_PORT)
+def parse_config(config_file):
+    participants = json.load(open(config_file, 'r'))
+    
+    for participant_name in participants:
+        for i in range(len(participants[participant_name]["IPP"])):
+            participants[participant_name]["IPP"][i] = IPPrefix(participants[participant_name]["IPP"][i])
+    
+    return participants
 
-### SDX Platform ###
-def sdx():
-    sdx_topology_file = json.load(open(cwd + '/pyretic/sdx/sdx_global.cfg', 'r'))
+def policy(participant, fwd):
+    '''
+        Specify participant policy
+    '''
+    participants = parse_config(cwd + "/pyretic/sdx/policies/simple_ip_prefixes/local.cfg")
     
-    ####
-    #### Initialize SDX
-    ####
-    (base, participants) = sdx_parse_config(cwd + '/pyretic/sdx/' + sdx_topology_file[0])
-    
-    ####
-    #### Apply policies from each participant
-    ####
-    sdx_parse_policies(cwd + '/pyretic/sdx/sdx_policies.cfg', base, participants)
-    
-    return sdx_platform(base)
-
-### Main ###
-def main():
-    """Handle ARPs, BGPs, SDX and then do MAC learning"""
-    sdx_policy = sdx()
-    print sdx_policy
-    
-    return if_(ARP, arp(), if_(BGP, identity, sdx_policy)) >> mac_learner()
+    return (
+        (parallel([match(dstip=participants["B"]["IPP"][i]) for i in range(len(participants["B"]["IPP"]))]) >> fwd(participant.phys_ports[0])) +
+        (parallel([match(dstip=participants["A"]["IPP"][i]) for i in range(len(participants["A"]["IPP"]))]) >> fwd(participant.peers['A']))
+    )

@@ -65,7 +65,7 @@ def getArgs():
 def simple(cli, controllerIP):
     "Create and test SDX Simple Module"
     print "Creating the topology with one IXP switch and three participating ASs\n\n" 
-    topo = SingleSwitchTopo(k=3)
+    topo = SingleSwitchTopo(k=4)
     net = Mininet(topo, controller=lambda name: RemoteController( 'c0', controllerIP ), autoSetMacs=True) #, autoStaticArp=True)
     net.start()
     hosts=net.hosts

@@ -217,3 +217,5 @@ Once running you should see that the pings originating from C1, with source IP `
 ## Contact Us
 
 Please contact us at `muhammad.shahbaz@gatech.edu` for any questions or concerns. 
+
+For more information, visit our project page at [noise-lab.net/projects/software-defined-networking/sdx](http://noise-lab.net/projects/software-defined-networking/sdx/).

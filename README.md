@@ -1,2 +1,2 @@
-SDX Platform -  
+SDX Platform (Internet2 Award)  
 ==============================

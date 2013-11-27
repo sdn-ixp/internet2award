@@ -1,9 +1,9 @@
 ### Installation steps:
 
-* Download the Internet2-SDX virtual machine (VM) image, below, and you are all set :)
+* Download and import the Internet2-SDX virtual machine (VM) image, below, in VirtualBox and you are all set :)
 
 ``` sh
-$ wget http://sites.noise.gatech.edu/~shahbaz/internet2-sdx
+$ wget http://sites.noise.gatech.edu/~shahbaz/internet2-sdx.ova
 ```
 
 The username and password for the VM are 'sdx'.

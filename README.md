@@ -180,7 +180,7 @@ The ping test will fail this time as there is no rule installed on the switch fo
 
 #### 2. Inbound Traffic-Engineering
 
-In inbout-TE policy, we do traffic engineering on the traffic coming to C from A or B. We distribute the traffic based on the IP prefixes. In this example, all traffic coming for the IP prefix `130.0.0.0/16` will be routed to port C1 and for `140.0.0.0/16` will be routed to C2. Here're the steps for running this policy:
+In inbound-TE policy, we do traffic engineering on the traffic coming to C from A or B. We distribute the traffic based on the IP prefixes. In this example, all traffic coming for the IP prefix `130.0.0.0/16` will be routed to port C1 and for `140.0.0.0/16` will be routed to C2. Here're the steps for running this policy:
 
 1. Make sure that `sdx_global.cfg` has the following content:
 
